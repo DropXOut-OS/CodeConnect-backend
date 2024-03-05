@@ -3,7 +3,7 @@
   "version": "20.11.1",
   "description": "build together",
   "main": "index.js",
-  "type": "module",
+"type": "module",
   "scripts": {
     "watch": "node --watch ./src/index.js",
     "start": "node ./src/index.js",
