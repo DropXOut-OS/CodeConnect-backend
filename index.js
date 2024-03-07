@@ -1,40 +1,22 @@
-import express from 'express';
-import dotenv from 'dotenv';
-import authRoutes from './routes/authRoutes.js';
-import connectDB from './config/database.js';
+import dotenv from "dotenv";
+import connectDB from "./config/database.js";
+import { app } from "./app.js";
 
 dotenv.config({
-    path: '.env',
+  path: ".env",
 });
 
-
-
-
 // Variables
-const app = express();
 const port = process.env.PORT || 5000;
 
-
 // MongoDb connection
-connectDB();
-
-
-
-// Middlewares 
-app.use(express.json());
-app.use('/api/v1/auth', authRoutes);
-
-
-
-// Home Page API
-app.get('/', (req, res) => {
-    return res.status(200).json({
-        success: true,
-        message: 'This is Home Page API for CodeConnect application.',
-    })
-})
-
-// App listener
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-})
+connectDB()
+  .then(() => {
+    app.listen(port, () => {
+        console.log(`http://localhost:${port}`);
+      });
+  })
+  .catch((err) => console.log(`mongodb connection failed${err}`));
+  
+  
+  
