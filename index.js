@@ -1,10 +1,15 @@
 import dotenv from "dotenv";
 import connectDB from "./config/database.js";
 import { app } from "./app.js";
+import userRouter from "./routes/userRoutes.js";
 
 dotenv.config({
   path: ".env",
 });
+
+
+// user routes
+  app.use('/api/v1/user', userRouter)
 
 // Variables
 const port = process.env.PORT || 5000;
@@ -19,4 +24,4 @@ connectDB()
   .catch((err) => console.log(`mongodb connection failed${err}`));
   
   
-  
+
