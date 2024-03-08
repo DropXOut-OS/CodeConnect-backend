@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema, model } from 'mongoose';
 
 const userSchema = new mongoose.Schema({
     
@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema({
     },
     password:{
         type: String,
+        select: false,
         required: [true, "password is is required"],
     },
     bio:{
@@ -30,12 +31,6 @@ const userSchema = new mongoose.Schema({
     coverimage:{
         type: String, //cloudinary link save here
     },
-    accessToken:{
-        type: String,
-    }
-    
-
-
 }, { timestamps: true });
 
 const User = mongoose.model("User", userSchema);
