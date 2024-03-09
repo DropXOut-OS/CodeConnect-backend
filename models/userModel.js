@@ -1,34 +1,37 @@
 import mongoose, { Schema, model } from 'mongoose';
 
 const userSchema = new mongoose.Schema({
-    
-    username:{
+    username: {
         type: String,
         required: true,
         index: true,
         lowercase: true,
-        trim: true
+        trim: true,
+        unique: true,
     },
-    email:{
+    email: {
         type: String,
-        required: [true, "email is required"],
-        trim: true
+        required: true,
+        trim: true,
+        unique: true,
     },
-    password:{
+    password: {
         type: String,
+        required: true,
+
         select: false,
-        required: [true, "password is is required"],
+        
     },
-    bio:{
+    bio: {
         type: String,
-        min: [5, "minimum 5 character required"],
-        max: [200, "maximum"]
+        min: 5,
+        max: 200,
     },
-    image:{
+    image: {
         type: String, //cloudinary link save here
         required: true
     },
-    coverimage:{
+    coverimage: {
         type: String, //cloudinary link save here
     },
 }, { timestamps: true });

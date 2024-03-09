@@ -1,5 +1,5 @@
-export const DB_NAME = "Codeconnect"
-  
-  
-  
-  
+export const DB_NAME = "CodeConnect"
+
+
+
+
