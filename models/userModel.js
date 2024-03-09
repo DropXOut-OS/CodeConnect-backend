@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema, model } from 'mongoose';
 
 const userSchema = new mongoose.Schema({
     username: {
@@ -18,6 +18,9 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
+
+        select: false,
+        
     },
     bio: {
         type: String,
