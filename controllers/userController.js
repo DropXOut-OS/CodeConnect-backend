@@ -2,50 +2,54 @@ import User from "../models/userModel.js";
 import bcrypt from 'bcrypt';
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/apiResponse.js";
-
-
-
+import { ApiError } from "../utils/apiError.js";
+import { uploadCloudinary } from "../utils/cloudinary.js";
 
 // API Controllers
-
-
 // 1) Register User
 const registerUser = asyncHandler(async (req, res) => {
 
-    const { username, email, password, bio, image, coverimage } = req.body;
+    const { username, email, password, bio } = req.body;
 
-    if (!username || !email || !password || !image) {
-        return res.status(404).json({
-            success: false,
-            message: "All fields are required.",
-        });
+    if (!username || !email || !password ) {
+        throw new ApiError(400, "All field are Required")
     }
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({
+            $or:[{username}, {email}]
+    });
     if (existingUser) {
-        return res.status(400).json({
-            success: false,
-            message: "User already registered.",
-        });
+        throw new ApiError(400, "User Already exists")
+    }
+    console.log(req.files)
+     const imageLocalPath = req.files?.image[0]?.path;
+     const coverimageLocalPath = (req.files?.coverimage && req.files?.coverimage[0]?.path) || "";
+  
+     if(!imageLocalPath){
+        throw new ApiError(400, "Image path is required")
     }
 
+    const image = await uploadCloudinary(imageLocalPath)
+    const coverimage = await uploadCloudinary(coverimageLocalPath)
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = await User.create({
+    
+    if(!image){
+        throw new ApiError(400, "image is required")
+    }
+    const user = await User.create({
         username,
         email,
         password: hashedPassword,
         bio,
-        image,
-        coverimage,
+        image: image.url,
+        coverimage: coverimage?.url || "",
     });
 
+    const createdUser = await User.findOne(user._id)
 
-    const { password: removedPass, ...user } = newUser._doc;
-
-    return res.status(201).json({
-        success: true,
-        message: "User registered successfully.",
-        user,
-    });
+    if(!createdUser){
+    throw new ApiError(500, "something went wrong while registering the user")
+    }
+    return res.status(201).json(new ApiResponse(200, createdUser, "User registered successfully."));
 
 
 })

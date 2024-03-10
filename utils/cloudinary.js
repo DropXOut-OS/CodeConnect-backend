@@ -5,6 +5,9 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY, 
   api_secret: process.env.CLOUDINARY_API_SECRET 
 });
+
+          
+
 const uploadCloudinary = async (localFilePath)=>{
   try {
     if(!localFilePath) return null
@@ -13,10 +16,11 @@ const uploadCloudinary = async (localFilePath)=>{
     }
       )
       console.log("file is uploaded on cloudnary", response.url)
-      return response.url
+      return response 
   } catch (error) {
     fs.unlinkSync(localFilePath)
     return null
     
   }
 }
+export {uploadCloudinary}
