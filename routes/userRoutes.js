@@ -1,7 +1,16 @@
 import express from 'express';
-import { registerUser } from '../controllers/userController.js';
+
+import { registerUser, loginUser } from '../controllers/userController.js';
 import { upload } from '../middlewares/multerMiddlewares.js';
+
+
 const Router = express.Router();
+
+
+// API Handler
+
+
+// Register User
 Router.post('/register',
     upload.fields([
 
@@ -14,6 +23,10 @@ Router.post('/register',
             maxCount: 1
         }
     ]),
-    registerUser)
+    registerUser);
+
+
+// Login User
+Router.post('/login', loginUser);
 
 export default Router
