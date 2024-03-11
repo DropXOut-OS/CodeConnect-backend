@@ -4,5 +4,10 @@ import { createPost } from '../controllers/postController.js';
 
 
 const Router = express.Router();
-Router.post('/create-post', upload.single('image'), createPost)
+Router.post('/create-post', upload.fields([
+    {
+        name: "image",
+        maxCount: 1
+    }
+]), createPost)
 export default Router

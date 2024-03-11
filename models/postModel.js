@@ -5,12 +5,13 @@ const postSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    creater:{
+    creator:{
+        required: true,
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     },
-    postImage:{
-        type: string,
+    image: {
+        type: String,
         required: true,
     },
     description: {
