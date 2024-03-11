@@ -1,7 +1,19 @@
 import express from 'express';
-import { registerUser } from '../controllers/userController.js';
+
+// Middlewares
 import { upload } from '../middlewares/multerMiddlewares.js';
+
+// Controllers
+import { registerUser, loginUser, logoutUser } from '../controllers/userController.js';
+
+
 const Router = express.Router();
+
+
+// API Handler
+
+
+// Register User
 Router.post('/register',
     upload.fields([
 
@@ -14,6 +26,11 @@ Router.post('/register',
             maxCount: 1
         }
     ]),
-    registerUser)
+    registerUser);
+
+
+// Login User
+Router.post('/login', loginUser);
+Router.get('/logout', logoutUser);
 
 export default Router
