@@ -1,5 +1,6 @@
 import User from "../models/userModel.js";
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/apiResponse.js";
 import { ApiError } from "../utils/apiError.js";
@@ -65,13 +66,14 @@ const loginUser = asyncHandler(async (req, res) => {
         });
     }
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select('+password');
     if (!user) {
         return res.status(404).json({
             success: false,
             message: 'Unable to login. Register first!',
         });
     }
+
 
     const pwdMatched = await bcrypt.compare(password, user.password);
     if (!pwdMatched) {
@@ -101,6 +103,20 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 
+// 3) Logout User
+const logoutUser = asyncHandler(async (req, res) => {
+    res.clearCookie('token');
+
+    return res.status(200).cookie('token', "", {
+        httpOnly: true,
+        expires: new Date(Date.now()),
+    }).json({
+        success: true,
+        message: 'User loggedOut successfully.',
+    })
+})
+
+
 
 
 
@@ -113,6 +129,6 @@ const loginUser = asyncHandler(async (req, res) => {
 export {
     registerUser,
     loginUser,
-
+    logoutUser,
 }
 
