@@ -28,7 +28,7 @@ console.log("Image path:", postImageLocalPath);
    console.log(req.user)
     const post = await Post.create({
         title,
-        creator: req.user._id,
+        creator: req.user.id,
         description,
         image: image.url
     })

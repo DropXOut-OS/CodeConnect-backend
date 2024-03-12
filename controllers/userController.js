@@ -102,7 +102,6 @@ const logoutUser = asyncHandler(async (req, res) => {
 
     .json(new ApiResponse(200, null, "User logged out successfully."));
 });
-})
 
 
 // 4) Delete Account
@@ -141,4 +140,4 @@ export {
     logoutUser,
     deleteAccount,
 }
-export { registerUser, loginUser, logoutUser };
+
