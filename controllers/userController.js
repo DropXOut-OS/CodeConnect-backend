@@ -73,7 +73,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
   const passwordMatched = await bcrypt.compare(password, user.password);
   if (!passwordMatched) {
-    throw new apiError(400, "email username or password is not correct");
+    throw new ApiError(400, "email username or password is not correct");
   }
 
   // This will act as util function.

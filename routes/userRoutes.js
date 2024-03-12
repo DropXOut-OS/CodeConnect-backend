@@ -32,7 +32,7 @@ Router.post('/register',
 
 // Login User
 Router.post('/login', loginUser);
-Router.get('/logout', logoutUser);
+Router.post('/logout', logoutUser);
 Router.delete('/delete-account/:id', isUserAuthenticated, deleteAccount);
 
 export default Router

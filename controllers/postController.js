@@ -3,6 +3,8 @@ import { ApiResponse } from "../utils/apiResponse.js";
 import { ApiError } from "../utils/apiError.js";
 import { uploadCloudinary } from "../utils/cloudinary.js";
 import Post from "../models/postModel.js";
+import User from "../models/userModel.js";
+
 
 const createPost = asyncHandler(async (req, res) => {
     const { title, description } = req.body;
@@ -25,13 +27,20 @@ console.log("Image path:", postImageLocalPath);
     
     const image = await uploadCloudinary(postImageLocalPath);
   
-   console.log(req.user)
+   const loggedinUser = req.user;
+
+   if(!loggedinUser){
+    throw new ApiError(401, "please login first, to create a post");
+   };
     const post = await Post.create({
         title,
         creator: req.user.id,
         description,
         image: image.url
     })
+    let user = await User.findOne({_id: req.user.id});
+    user.posts.push(post._id);
+    await user.save();
     return res.status(201).json(new ApiResponse(201, post, "Post created successfully"))
 })
 export {createPost}
