@@ -99,7 +99,46 @@ const logoutUser = asyncHandler(async (req, res) => {
       httpOnly: true,
       expires: new Date(Date.now()),
     })
+
     .json(new ApiResponse(200, null, "User logged out successfully."));
 });
+})
 
+
+// 4) Delete Account
+const deleteAccount = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+
+    if (!id) {
+        return res.status(404).json({
+            success: false,
+            message: "Please Login first.",
+        });
+    }
+
+    if (id !== req.user.id) {
+        return res.status(404).json({
+            success: false,
+            message: "You can delete your own account.",
+        });
+    }
+
+
+    const user = await User.findByIdAndDelete(id);
+    return res.status(200).cookie("token", "", {
+        httpOnly: true,
+        expires: new Date(Date.now()),
+    }).json({
+        success: true,
+        message: "User account deleted successfully.",
+    });
+
+})
+
+export {
+    registerUser,
+    loginUser,
+    logoutUser,
+    deleteAccount,
+}
 export { registerUser, loginUser, logoutUser };
