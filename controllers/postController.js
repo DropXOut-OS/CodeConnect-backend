@@ -43,4 +43,41 @@ console.log("Image path:", postImageLocalPath);
     await user.save();
     return res.status(201).json(new ApiResponse(201, post, "Post created successfully"))
 })
-export {createPost}
+const updatePost = asyncHandler(async(req,res)=>{
+  const {id} = req.params;
+  const {description, title} = req.body;
+
+  if(!(description || title)){
+    throw new ApiError(400, "All fields are required");
+  }
+  const post = await Post.findById(id);
+  if(!post){
+    throw new ApiError(404, "Post not found");
+  }
+  if(post.creator.toString() !== req.user.id){
+    throw new ApiError(401, "Unauthorized");
+  }
+  const deletedPost = await Post.updateOne({_id: id}, {
+    $set: {
+      title,
+      description,
+    }
+  })
+  return res.status(200).json(new ApiResponse(200, deletedPost, "Post updated successfully"))
+ 
+})
+const deletePost = asyncHandler(async(req,res)=>{
+  const {id} = req.params;
+ 
+  const post = await Post.findById(id);
+  if(!post){
+    throw new ApiError(404, "Post not found");
+  }
+  if(post.creator.toString() !== req.user.id){
+    throw new ApiError(401, "Unauthorized");
+  }
+  const deletedPost = await Post.deleteOne({_id: id});
+  return res.status(200).json(new ApiResponse(200, deletedPost, "Post deleted successfully"))
+ 
+})
+export {createPost, updatePost, deletePost}

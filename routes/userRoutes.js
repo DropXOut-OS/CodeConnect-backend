@@ -33,6 +33,9 @@ Router.post('/register',
 // Login User
 Router.post('/login', loginUser);
 Router.post('/logout', logoutUser);
+
+
+//protected route
 Router.delete('/delete-account/:id', isUserAuthenticated, deleteAccount);
 
 export default Router
