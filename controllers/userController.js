@@ -54,13 +54,11 @@ const registerUser = asyncHandler(async (req, res) => {
     .status(201)
     .json(new ApiResponse(200, createdUser, "User registered successfully."));
 });
-
 // 2) Login User
-
 const loginUser = asyncHandler(async (req, res) => {
   const { email, username, password } = req.body;
 
-  if ((!email && !username)|| !password) {
+  if ((!email && !username) || !password) {
     throw new ApiError(400, "All fields are required");
   }
 
@@ -89,7 +87,6 @@ const loginUser = asyncHandler(async (req, res) => {
     })
     .json(new ApiResponse(200, userInfo, "welcome back. login successfull"));
 });
-
 // 3) Logout User
 const logoutUser = asyncHandler(async (req, res) => {
   res.clearCookie("token");
@@ -102,42 +99,80 @@ const logoutUser = asyncHandler(async (req, res) => {
 
     .json(new ApiResponse(200, null, "User logged out successfully."));
 });
-
-
+const updateProfileImage = asyncHandler(async (req, res) => {
+  const id = req.user.id;
+  console.log(id)
+const imageLocalPath = req.file?.path;
+  if (!imageLocalPath) {
+    throw new ApiError(400, "Image path is required");
+  }
+  const image = await uploadCloudinary(imageLocalPath);
+  if (!image) {
+    throw new ApiError(400, "image is required");
+  }
+  const user = await User.findByIdAndUpdate(id, {
+    image: image.url,
+  });
+  if (!user) {
+    throw new ApiError(500, "something went wrong while updating the user");
+  }
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "Profile image updated successfully."));
+});
+const updateCoverImage = asyncHandler(async (req, res) => {
+  const { id } = req.user.id;
+  const coverImageLocalPath = req.file?.path;
+  if (!coverImageLocalPath) {
+    throw new ApiError(400, "Image path is required");
+  }
+  const image = await uploadCloudinary(coverImageLocalPath);
+  if (!image) {
+    throw new ApiError(400, "image is required");
+  }
+  const user = await User.findByIdAndUpdate(id, {
+    coverimage: image.url,
+  });
+  console.log(user)
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "cover image updated successfully."));
+});
 // 4) Delete Account
 const deleteAccount = asyncHandler(async (req, res) => {
-    const { id } = req.params;
+  const { id } = req.params;
 
-    if (!id) {
-        return res.status(404).json({
-            success: false,
-            message: "Please Login first.",
-        });
-    }
-
-    if (id !== req.user.id) {
-        return res.status(404).json({
-            success: false,
-            message: "You can delete your own account.",
-        });
-    }
-
-
-    const user = await User.findByIdAndDelete(id);
-    return res.status(200).cookie("token", "", {
-        httpOnly: true,
-        expires: new Date(Date.now()),
-    }).json({
-        success: true,
-        message: "User account deleted successfully.",
+  if (!id) {
+    return res.status(404).json({
+      success: false,
+      message: "Please Login first.",
     });
+  }
 
-})
+  if (id !== req.user.id) {
+    return res.status(404).json({
+      success: false,
+      message: "You can delete your own account.",
+    });
+  }
 
-export {
-    registerUser,
-    loginUser,
-    logoutUser,
-    deleteAccount,
-}
-
+  const user = await User.findByIdAndDelete(id);
+  return res
+    .status(200)
+    .cookie("token", "", {
+      httpOnly: true,
+      expires: new Date(Date.now()),
+    })
+    .json({
+      success: true,
+      message: "User account deleted successfully.",
+    });
+});
+export { 
+  registerUser, 
+  loginUser, 
+  logoutUser, 
+  deleteAccount, 
+  updateProfileImage, 
+  updateCoverImage 
+};

@@ -14,22 +14,16 @@ const createPost = asyncHandler(async (req, res) => {
   if (!req.files) {
     throw new ApiError(400, "Image is required. Please upload an image file.");
   }
-
   const postImageLocalPath = req.files?.image[0]?.path;
-
   if (!postImageLocalPath) {
     throw new ApiError(
       400,
       "Image path is required. Please ensure a valid image file is uploaded."
     );
   }
-
   console.log("Image path:", postImageLocalPath);
-
   const image = await uploadCloudinary(postImageLocalPath);
-
   const loggedinUser = req.user;
-
   if (!loggedinUser) {
     throw new ApiError(401, "please login first, to create a post");
   }
@@ -46,6 +40,7 @@ const createPost = asyncHandler(async (req, res) => {
     .status(201)
     .json(new ApiResponse(201, post, "Post created successfully"));
 });
+
 const updatePost = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { description, title } = req.body;
@@ -73,6 +68,30 @@ const updatePost = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, deletedPost, "Post updated successfully"));
 });
+const updatePostImage = asyncHandler(async (req, res) => {
+  const id = req.params;
+  console.log(id);
+  const imageLocalPath = req.file?.path;
+  if (!imageLocalPath) {
+    throw new ApiError(400, "Image path is required");
+  }
+  const image = await uploadCloudinary(imageLocalPath);
+  if (!image) {
+    throw new ApiError(400, "image is required");
+  }
+  const post = await Post.findByIdAndUpdate(id, {
+    image: image.url,
+  });
+  if (!post) {
+    throw new ApiError(
+      500,
+      "something went wrong while updating the post image"
+    );
+  }
+  return res
+    .status(200)
+    .json(new ApiResponse(200, post, "post image updated successfully."));
+});
 const deletePost = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
@@ -90,25 +109,40 @@ const deletePost = asyncHandler(async (req, res) => {
 });
 const fetchAllPosts = asyncHandler(async (req, res) => {
   const { limit } = req.query;
-  const posts = await Post.find().populate("creator", "username image");
+  const posts = await Post.find()
+    .populate({ path: "creator", select: "-bio -posts -coverimage" })
+    .populate({
+      path: "comments",
+      populate: {
+        path: "creator", select: "-bio -posts -email -coverimage",
+      },
+    });
   return res
     .status(200)
     .json(new ApiResponse(200, posts, "Posts fetched successfully"));
 });
 const fetchPostByUsername = asyncHandler(async (req, res) => {
-  const {username} = req.params;
+  const { username } = req.params;
 
-  if(!username){
+  if (!username) {
     throw new ApiError(400, "username is required");
   }
-  const userPost = await User.findOne({username}).populate("posts").select("-bio -coverimage");
-  if(!userPost){
+  const userPost = await User.findOne({ username })
+    .populate("posts")
+    .select("-bio -coverimage");
+  if (!userPost) {
     throw new ApiError(404, "user not found");
   }
   return res
     .status(200)
-    .json
-    (new ApiResponse(200, userPost, "Posts fetched successfully"));
+    .json(new ApiResponse(200, userPost, "Posts fetched successfully"));
 });
 
-export { createPost, updatePost, deletePost, fetchAllPosts, fetchPostByUsername };
+export {
+  createPost,
+  updatePost,
+  deletePost,
+  fetchAllPosts,
+  fetchPostByUsername,
+  updatePostImage,
+};
