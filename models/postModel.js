@@ -1,11 +1,11 @@
-import mongoose, {Schema, model } from "mongoose"
+import mongoose, { Schema, model } from "mongoose"
 
 const postSchema = new mongoose.Schema({
     title: {
         type: String,
         required: true
     },
-    creator:{
+    creator: {
         required: true,
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
