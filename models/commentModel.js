@@ -1,6 +1,5 @@
-import mongoose from 'mongoose';
 import mongoose, { Schema, model } from 'mongoose';
-const chatSchema = new mongoose.Schema({
+const commentShema = new mongoose.Schema({
     postId:{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Post",
@@ -9,12 +8,12 @@ const chatSchema = new mongoose.Schema({
         type:String,
         required: true
     },
-    comment:{
+    creator:{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     }
    
 }, { timestamps: true });
 
-const Chat = mongoose.model("Chat", chatSchema);
-export default Chat;
+const Comment = mongoose.model("Comment", commentShema);
+export default Comment;
