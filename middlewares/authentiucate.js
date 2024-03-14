@@ -1,20 +1,19 @@
 import jwt from 'jsonwebtoken';
+import { ApiError } from '../utils/apiError.js';
 
 
 
 export const isUserAuthenticated = (req, res, next) => {
 
     const { token } = req.cookies;
-    console.log(token);
+    console.log("token", token);
 
     if (!token) {
-        return res.status(401).json({
-            success: false,
-            message: "Unauthorized"
-        });
+       throw new ApiError(401, "Unauthorized");
     }
 
     const decode = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decode;
+
     next();
 }

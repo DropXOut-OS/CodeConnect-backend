@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema({
     coverimage: {
         type: String, //cloudinary link save here
     },
-    post:[
+    posts:[
         {type: mongoose.Schema.Types.ObjectId,
         ref: "Post"}
     ],

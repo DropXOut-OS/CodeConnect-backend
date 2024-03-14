@@ -3,6 +3,7 @@ import connectDB from "./config/database.js";
 import { app } from "./app.js";
 import userRouter from "./routes/userRoutes.js";
 import postRouter from "./routes/postRoutes.js";
+import commentRouter from "./routes/commentRoute.js";
 dotenv.config({
     path: ".env",
 });
@@ -11,6 +12,7 @@ dotenv.config({
 
   app.use('/api/v1/user', userRouter)
   app.use('/api/v1/post', postRouter)
+  app.use('/api/v1/comment', commentRouter)
 
 
 // Variables

@@ -17,7 +17,13 @@ const postSchema = new mongoose.Schema({
     description: {
         type: String,
         required: true,
-    }
+    },
+    comments:[
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Comment"
+        }
+    ]
 })
 const post = mongoose.model("Post", postSchema)
 export default post

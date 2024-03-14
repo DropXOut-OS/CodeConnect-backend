@@ -1,38 +1,60 @@
-import express from 'express';
+import express from "express";
 
 // Middlewares
-import { upload } from '../middlewares/multerMiddlewares.js';
+import { upload } from "../middlewares/multerMiddlewares.js";
 
 // Controllers
-import { registerUser, loginUser, logoutUser, deleteAccount } from '../controllers/userController.js';
-import { isUserAuthenticated } from '../middlewares/authentiucate.js';
-
+import {
+    registerUser,
+    loginUser,
+    logoutUser,
+    deleteAccount,
+    updateProfileImage,
+    updateCoverImage,
+    resetPassword
+} from "../controllers/userController.js";
+import { isUserAuthenticated } from "../middlewares/authentiucate.js";
 
 const Router = express.Router();
 
-
 // API Handler
 
-
 // Register User
-Router.post('/register',
+Router.post(
+    "/register",
     upload.fields([
-
         {
             name: "image",
-            maxCount: 1
+            maxCount: 1,
         },
         {
             name: "coverimage",
-            maxCount: 1
-        }
+            maxCount: 1,
+        },
     ]),
-    registerUser);
-
+    registerUser
+);
 
 // Login User
-Router.post('/login', loginUser);
-Router.get('/logout', logoutUser);
-Router.delete('/delete-account/:id', isUserAuthenticated, deleteAccount);
+Router.post("/login", loginUser);
+Router.post("/logout", logoutUser);
 
-export default Router
+updateCoverImage;
+//protected route
+Router.patch(
+    "/profile-image-update",
+    isUserAuthenticated,
+    upload.single("image"),
+    updateProfileImage
+);
+Router.patch(
+    "/cover-image-update",
+    isUserAuthenticated,
+    upload.single("coverimage"),
+    updateCoverImage
+);
+
+Router.delete("/delete-account/:id", isUserAuthenticated, deleteAccount);
+Router.post('/reset-password', isUserAuthenticated, resetPassword);
+
+export default Router;
