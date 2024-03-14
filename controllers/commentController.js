@@ -88,32 +88,22 @@ const updateComment = asyncHandler(async (req, res) => {
 /******88****************************** */
 // Delete Comment 
 const deleteComment = asyncHandler(async (req, res) => {
-    const { id } = req.user;
-    const { postId } = req.params;
+    const { commentId } = req.params
+    const id = req.user.id
 
-    if (!id) {
-        throw new ApiError(401, "Unautorized");
+    const comment = await Comment.findById(commentId)
+
+    if (!comment) {
+        throw new ApiError(404, "comment not found")
     }
-
-    if (!postId) {
-        throw new ApiError(404, "Post Not Fount");
+    if (comment.creator.toString() !== id) {
+        throw new ApiError(401, "you are not create this comment")
     }
+    const deletedCommment = await comment.deleteOne({ _id: commentId })
 
-    const post = await Post.findOne({ postId });
-    if (!post) {
-        return res.status(404).json({
-            success: false,
-            message: "Post not found.",
-        })
-    }
+    return res.status(200).json(new ApiResponse(200, deletedCommment, "deleted successful"))
 
-
-    post.comments.splice(post, 1);
-
-    await post.save();
-    return res.status(200).json(new ApiResponse(200, "Comment deleted successfully."));
-})
-
+});
 
 
 export { createComment, updateComment, deleteComment };
