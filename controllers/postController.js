@@ -92,6 +92,27 @@ const updatePostImage = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, post, "post image updated successfully."));
 });
+const postLike = asyncHandler(async (req, res) => {
+    const _id = req.params;
+    const id = req.user.id
+    const post = await Post.findOne(_id)
+    
+    if (!post) {
+      throw new ApiError(404, "Post not found");
+    }
+    if (post.likeBy.includes(id)) {
+      post.likeBy.pull(id)
+      post.likes = post.likeBy.length
+      res.status(200).json(new ApiResponse(200, "unliked successfully"));
+   
+    } else {
+      post.likeBy.push(id)
+      post.likes = post.likeBy.length   
+      res.status(200).json(new ApiResponse(200, "liked successfully"));
+    }
+    await post.save()
+    return res.status(200).json(new ApiResponse(200, "successfully"));
+});
 const deletePost = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
@@ -124,10 +145,19 @@ const fetchAllPosts = asyncHandler(async (req, res) => {
 const fetchPostByUsername = asyncHandler(async (req, res) => {
   const { username } = req.params;
 
-  if (!username) {
-    throw new ApiError(400, "username is required");
+  const userPost = await User.findOne({username})
+    .populate("posts")
+    .select("-bio -coverimage");
+  if (!userPost) {
+    throw new ApiError(404, "user not found");
   }
-  const userPost = await User.findOne({ username })
+  return res
+    .status(200)
+    .json(new ApiResponse(200, userPost, "Posts fetched successfully"));
+});
+const fetchPostByUserId = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const userPost = await User.findById({_id: id})
     .populate("posts")
     .select("-bio -coverimage");
   if (!userPost) {
@@ -145,4 +175,6 @@ export {
   fetchAllPosts,
   fetchPostByUsername,
   updatePostImage,
+  fetchPostByUserId,
+  postLike
 };
