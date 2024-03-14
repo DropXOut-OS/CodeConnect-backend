@@ -5,15 +5,18 @@ import {
   deletePost,
   fetchAllPosts,
   fetchPostByUsername,
+  fetchPostByUserId,
   updatePost,
   updatePostImage,
+  postLike,
 } from "../controllers/postController.js";
 import { isUserAuthenticated } from "../middlewares/authentiucate.js";
 const Router = express.Router();
 
 Router.use(isUserAuthenticated);
-
+Router.post("/post-like/:_id", postLike)
 Router.get("/fetch-postBy/:username", fetchPostByUsername);
+Router.get("/fetch-postById/:id", fetchPostByUserId);
 Router.get("/fetch-all-post", fetchAllPosts);
 Router.post(
   "/create-post",
