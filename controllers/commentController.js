@@ -24,10 +24,28 @@ const createComment = asyncHandler(async (req, res) => {
   });
   const post = await Post.findOne({ _id: postId });
   post.comments.push(comment._id);
+  post.commentCount = post.comments.length
   await post.save();
   return res
     .status(201)
     .json(new ApiResponse(201, comment, "comment created successful"));
 });
+const deleteComment = asyncHandler(async (req, res) => {
+  const {commentId} = req.params
+  const id = req.user.id
 
-export { createComment };
+  const comment = await Comment.findById(commentId)
+
+  if(!comment){
+    throw new ApiError(404, "comment not found")
+  }
+  if (comment.creator.toString() !== id) {
+    throw new ApiError(401, "you are not create this comment")
+  }
+  const deletedCommment = await comment.deleteOne({_id: commentId})
+
+  return res.status(200).json(new ApiResponse(200, deletedCommment, "deleted successful"))
+
+});
+
+export { createComment, deleteComment };
