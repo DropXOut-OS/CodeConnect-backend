@@ -54,6 +54,8 @@ Router.patch(
     updateCoverImage
 );
 
+
+Router.post("/google", googleOAuth);
 Router.delete("/delete-account/:id", isUserAuthenticated, deleteAccount);
 Router.post('/reset-password', isUserAuthenticated, resetPassword);
 
