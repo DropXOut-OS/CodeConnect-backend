@@ -229,6 +229,55 @@ const resetPassword = asyncHandler(async (req, res) => {
 })
 
 
+// 6) Google OAuth
+const googleOAuth = asyncHandler(async (req, res) => {
+
+    const { name, email, photo } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (user) {
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+        const { password: pass, ...userInfo } = user._doc;
+
+        return res.status(200).cookie("token", token, {
+            httpOnly: true,
+            expires: new Date(Date.now() + 2 * 60 * 1000),
+        }).json({
+            success: true,
+            message: "User loggedIn with Google",
+            userInfo,
+        })
+    }
+    else {
+        const generatePassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-4); // 12 string pwd
+        const hashedPassword = await bcrypt.hash(generatePassword, 10);
+
+        const user = await User.create({
+            username: name.split(" ").join("").toLowerCase() + Math.random().toString(36).slice(-4),
+            email: email,
+            password: hashedPassword,
+            image: photo
+        });
+
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+        const { password: pass, ...userInfo } = user._doc;
+
+        return res.status(200).cookie("token", token, {
+            httpOnly: true,
+            expires: new Date(Date.now() + 2 * 60 * 1000),
+        }).json({
+            success: true,
+            message: "User registered with Google",
+            userInfo,
+        })
+    }
+})
+
+
+
+
+
 
 export {
     registerUser,
@@ -237,7 +286,8 @@ export {
     deleteAccount,
     updateProfileImage,
     updateCoverImage,
-    resetPassword
+    resetPassword,
+    googleOAuth
 };
 
 
