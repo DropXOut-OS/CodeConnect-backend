@@ -144,8 +144,8 @@ const fetchAllPosts = asyncHandler(async (req, res) => {
 });
 const fetchPostByUsername = asyncHandler(async (req, res) => {
     const { username } = req.params;
-
-    const userPost = await User.findOne({ username })
+    const searchRegex = new RegExp(username, 'i');  // Case-insensitive search
+    const userPost = await User.find({ username: { $regex: searchRegex } }).sort({ createdAt: -1 })
         .populate("posts")
         .select("-bio -coverimage");
     if (!userPost) {

@@ -55,6 +55,6 @@ Router.patch(
 );
 
 Router.delete("/delete-account/:id", isUserAuthenticated, deleteAccount);
-Router.post('/reset-password', isUserAuthenticated, resetPassword);
+Router.post('/reset-password', resetPassword);
 
 export default Router;

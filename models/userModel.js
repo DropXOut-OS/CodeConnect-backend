@@ -2,9 +2,9 @@ import mongoose, { Schema, model } from 'mongoose';
 
 const userSchema = new mongoose.Schema({
     username: {
-        type: String,
+       type: String,
         required: true,
-        index: true,
+        text: true,
         lowercase: true,
         trim: true,
         unique: true,
