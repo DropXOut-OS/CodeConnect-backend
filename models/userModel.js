@@ -3,22 +3,24 @@ import mongoose, { Schema, model } from 'mongoose';
 const userSchema = new mongoose.Schema({
     username: {
        type: String,
-        required: true,
         text: true,
         lowercase: true,
         trim: true,
         unique: true,
     },
+    phone:{
+        type: Number,
+        min: 10,
+    },
     email: {
         type: String,
-        required: true,
         trim: true,
         unique: true,
     },
+    
     password: {
         type: String,
         required: true,
-
         select: false,
 
     },
@@ -26,6 +28,9 @@ const userSchema = new mongoose.Schema({
         type: String,
         min: 5,
         max: 200,
+    },
+    dob:{
+        type: Date   
     },
     image: {
         type: String, //cloudinary link save here
@@ -35,8 +40,10 @@ const userSchema = new mongoose.Schema({
         type: String, //cloudinary link save here
     },
     posts:[
-        {type: mongoose.Schema.Types.ObjectId,
-        ref: "Post"}
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Post"
+    }
     ],
 }, { timestamps: true });
 
