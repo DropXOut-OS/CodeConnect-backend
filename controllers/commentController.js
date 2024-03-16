@@ -30,6 +30,7 @@ const createComment = asyncHandler(async (req, res) => {
 
     const post = await Post.findOne({ _id: postId });
     post.comments.push(comment._id);
+    post.commentCount = post.comments.length
     await post.save();
     return res
         .status(201)

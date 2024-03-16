@@ -9,16 +9,16 @@ import { uploadCloudinary } from "../utils/cloudinary.js";
 // API Controllers
 // 1) Register User
 const registerUser = asyncHandler(async (req, res) => {
-    const { username, email, password, bio } = req.body;
+    const { username, email, phone, password, bio, dob } = req.body;
 
-    if (!username || !email || !password) {
+    if ((!email && !phone) || !username || !password) {
         throw new ApiError(400, "All field are Required");
     }
     const existingUser = await User.findOne({
-        $or: [{ username }, { email }],
+        $or: [{ phone }, { email }, {username}],
     });
     if (existingUser) {
-        throw new ApiError(400, "User Already exists");
+        throw new ApiError(409, "User Already exists");
     }
     console.log(req.files);
     const imageLocalPath = req.files?.image[0]?.path;
@@ -39,8 +39,10 @@ const registerUser = asyncHandler(async (req, res) => {
     const user = await User.create({
         username,
         email,
+        phone,
         password: hashedPassword,
         bio,
+        dob,
         image: image.url,
         coverimage: coverimage?.url || "",
     });
